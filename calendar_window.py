@@ -23,20 +23,21 @@ class CalendarWindow(ctk.CTkToplevel):
         self.task_entry = ctk.CTkEntry(self, placeholder_text="Введите задачу")
         self.task_entry.pack(pady=10)
 
-        save_button = ctk.CTkEntry(self, placeholder_text="Добавить задачу", command=self.add_task)
+        # Use CTkButton instead of CTkEntry for buttons with commands
+        save_button = ctk.CTkButton(self, text="Добавить задачу", command=self.add_task)
         save_button.pack(pady=(0, 5))
 
-        delete_button = ctk.CTkEntry(self, placeholder_text="Удалить задачу", command=self.delete_task)
+        delete_button = ctk.CTkButton(self, text="Удалить задачу", command=self.delete_task)
         delete_button.pack(pady=(0, 10))
 
-        self.tasks_listbox = ctk.CTkEntry(self, width=300, height=150)
+        self.tasks_listbox = ctk.CTkTextbox(self, width=300, height=150)
         self.tasks_listbox.pack(padx=10, pady=10)
         self.tasks_listbox.configure(state='normal')
 
         self.calendar.bind("<Double-1>", self.open_task_window)
         self.calendar.bind("<<CalendarSelected>>", self.load_tasks)
 
-        close_button = ctk.CTkEntry(self, text="Закрыть", command=self.destroy)
+        close_button = ctk.CTkButton(self, text="Закрыть", command=self.destroy)
         close_button.pack(pady=(0, 10))
 
         self.database = DatabaseRepair()
@@ -44,7 +45,7 @@ class CalendarWindow(ctk.CTkToplevel):
 
     def load_tasks(self, event=None):
         self.tasks_listbox.configure(state='normal')
-        self.tasks_listbox.delete(1.0,'end')
+        self.tasks_listbox.delete(1.0, 'end')
         selected_date = self.calendar.get_date()
         tasks = self.database.get_all_tasks()
         for task in tasks:
@@ -52,7 +53,6 @@ class CalendarWindow(ctk.CTkToplevel):
                 self.tasks_listbox.insert('end', f"{task['task']}\n")
         self.tasks_listbox.configure(state='disabled')
 
-    
     def add_task(self):
         task = self.task_entry.get()
         selected_date = self.calendar.get_date()
@@ -61,20 +61,16 @@ class CalendarWindow(ctk.CTkToplevel):
             self.load_tasks(None)
             self.task_entry.delete(0, 'end')
 
-    def delete_task(self, task):
-        task_id = task['id']
-        self.database.delete_task(task_id)
-        self.load_tasks(None)
+    def delete_task(self):
+        selected_task = self.tasks_listbox.get('active')
+        if selected_task:
+            self.database.delete_task(selected_task)
+            self.load_tasks(None)
 
-    def complete_task(self, task):
-        task_id = task['id']
-        self.database.cursor.execute('UPDATE tasks SET status = ? WHWRW id =?', ('Выполнено', task_id))
-        self.database.conn.commit()
-        self.load_tasks()
-            
     def open_task_window(self, event):
         selected_date = self.calendar.get_date()
         TaskWindow(self, selected_date, self.database)
+
 
 class TaskWindow(ctk.CTkToplevel):
     def __init__(self, parent, date, database):

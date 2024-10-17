@@ -31,10 +31,10 @@ class StatisticsWindow(ctk.CTkToplevel):
 
         component_headers = ["Комплектующие", "Количество выполненных заявок"]
         for idx, header in enumerate(component_headers):
-            label = ctk.CTkLabel(self.component_count_frame, text=header, fonts=("Arial", 12, "bold"), anchor='w')
+            label = ctk.CTkLabel(self.component_count_frame, text=header, font=("Arial", 12, "bold"), anchor='w')
             label.grid(row=0, column=idx, padx=5, pady=5, sticky='ew')
 
-        self.load_component_counts()
+            self.load_components_counts()
 
         self.close_button = ctk.CTkButton(self, text="Закрыть", command=self.destroy)
         self.close_button.pack(pady=10)
@@ -70,18 +70,18 @@ class StatisticsWindow(ctk.CTkToplevel):
 
             ctk.CTkLabel(self.table_frame, text=time_spent_str, anchor='w', text_color=text_color).grid(row=i, column=9, padx=5, pady=2)
 
-        def load_components_counts(self):
-            completed_orders = [order for order in self.database.get_all_repair_orders() if order['status'] == 'Выполнено']
+    def load_components_counts(self):
+        completed_orders = [order for order in self.database.get_all_repair_orders() if order['status'] == 'Выполнено']
 
-            component_counts = {}
-            for order in completed_orders:
-                components = order['components'].split(', ')
-                for component in components:
-                    if component in component_counts:
-                        component_counts[component] += 1
-                    else:
-                        component_counts[component] = 1
+        component_counts = {}
+        for order in completed_orders:
+            components = order['components'].split(', ')
+            for component in components:
+                if component in component_counts:
+                    component_counts[component] += 1
+                else:
+                    component_counts[component] = 1
             
-            for i, (component, count) in enumerate(component_counts.items(), start=1):
-                ctk.CTkLabel(self.component_counts_frame, text=component, anchor='w').grid(row=i, column=0, padx=5, pady=2)
-                ctk.CTkLabel(self.component_counts_frame, text=str(count), anchor='w').grid(row=i, column=1, padx=5, pady=2)
+        for i, (component, count) in enumerate(component_counts.items(), start=1):
+            ctk.CTkLabel(self.component_counts_frame, text=component, anchor='w').grid(row=i, column=0, padx=5, pady=2)
+            ctk.CTkLabel(self.component_counts_frame, text=str(count), anchor='w').grid(row=i, column=1, padx=5, pady=2)

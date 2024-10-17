@@ -27,7 +27,7 @@ class CustomWindow(ctk.CTk):
         super().__init__()
 
         self.title("Бас система")
-        self.geometry("800x600")
+        self.geometry("900x600")
         self.resizable(False, False)
         self.update_weather_interval = 20000
 
@@ -158,12 +158,13 @@ class CustomWindow(ctk.CTk):
                 task_label = ctk.CTkLabel(self.task_info_label, text=f"{task['task_date']}", text_color=color)
                 task_label.pack(anchor='w', padx=5, pady=2)
 
-            self.task_info_label.lift()
-        else:
-            no_tasks_label = ctk.CTkLabel(self.task_info_label, text=f"{task['task_date']}  {task['task']} (Статус: {task['status']})", text_color=color)
-            no_tasks_label.pack(anchor='w', padx=5, pady=2)
+                self.task_info_label.lift()
+            else:
+                no_tasks_label = ctk.CTkLabel(self.task_info_label, text="Задач на сегодня нет", text_color="black")
+                no_tasks_label.pack(anchor='w', padx=5, pady=2)
 
-            self.task_info_label.lift()
+                self.task_info_label.lift()
+
 
     def hide_task_info(self, event):
         self.task_info_label.place_forget()
